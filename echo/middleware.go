@@ -29,7 +29,7 @@ func NewConfig(key string) Config {
 	}
 }
 
-// HeaderVerificationMiddleware is a verification middleware that only allows requests that are verified to originate
+// HeaderVerification is a verification middleware that only allows requests that are verified to originate
 // from Clubhouse when generated with a secret.
 // From https://clubhouse.io/api/webhook/v1/#Signature:
 // If you provide a secret when you create the Outgoing Webhook, it will include an HTTP header named
