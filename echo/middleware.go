@@ -64,7 +64,7 @@ func HeaderVerificationMiddleware(config Config, skipper middleware.Skipper) ech
 				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error occured when verifying header: %w", err))
 			}
 			if !validMAC(message, messageMAC, config.Key) {
-				return echo.NewHTTPError(http.StatusForbidden, fmt.Errorf("unable to verify request origin from clubhouse"))
+				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Errorf("unable to verify request origin from clubhouse"))
 			}
 
 			// Restore request body for processing down the chain
