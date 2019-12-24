@@ -37,7 +37,7 @@ func NewConfig(key string) Config {
 //
 // The signature is computed by the HMAC-SHA-256 algorithm. The ‘message’ is the HTTP request body encoded in UTF-8.
 // The ‘secret’ is the secret string you provided, also encoded in UTF-8.
-func HeaderVerificationMiddleware(config Config, skipper middleware.Skipper) echo.MiddlewareFunc {
+func HeaderVerification(config Config, skipper middleware.Skipper) echo.MiddlewareFunc {
 
 	if skipper == nil {
 		skipper = middleware.DefaultSkipper

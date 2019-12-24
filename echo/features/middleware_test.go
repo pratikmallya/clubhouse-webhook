@@ -137,7 +137,7 @@ func setValidHeader(req *http.Request) {
 
 func testserver() *echo.Echo {
 	e := echo.New()
-	e.Use(echoMiddleWare.HeaderVerificationMiddleware(echoMiddleWare.NewConfig(testSecretClubhouse), nil))
+	e.Use(echoMiddleWare.HeaderVerification(echoMiddleWare.NewConfig(testSecretClubhouse), nil))
 	e.GET("/", func(c echo.Context) error {
 		return c.NoContent(http.StatusNoContent)
 	})
