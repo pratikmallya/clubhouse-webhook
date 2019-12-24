@@ -55,9 +55,7 @@ func HeaderVerificationMiddleware(config Config, skipper middleware.Skipper) ech
 			}
 
 			messageMAC := make([]byte, hex.DecodedLen(len(hexMessageMAC)))
-			_, err := hex.Decode(messageMAC, []byte(hexMessageMAC))
-
-			if err != nil {
+			if _, err := hex.Decode(messageMAC, []byte(hexMessageMAC)); err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error when decoding header %s: %v", HeaderClubHouseSignature, err))
 			}
 
