@@ -3,7 +3,7 @@ module github.com/pratikmallya/clubhouse-webhook
 go 1.13
 
 require (
-	github.com/DATA-DOG/godog v0.7.13 // indirect
+	github.com/DATA-DOG/godog v0.7.13
 	github.com/labstack/echo/v4 v4.1.11
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.11 // indirect
