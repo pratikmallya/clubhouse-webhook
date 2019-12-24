@@ -61,7 +61,7 @@ func HeaderVerificationMiddleware(config Config, skipper middleware.Skipper) ech
 
 			message, err := ioutil.ReadAll(c.Request().Body)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error occured when verifying header: %w", err))
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error occured when reading request body: %w", err))
 			}
 			if !validMAC(message, messageMAC, config.Key) {
 				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Errorf("unable to verify request origin from clubhouse"))
