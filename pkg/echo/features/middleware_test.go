@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	echo2 "github.com/pratikmallya/clubhouse-webhook/pkg/echo"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -16,8 +17,6 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/colors"
 	"github.com/labstack/echo/v4"
-
-	echoMiddleWare "github.com/pratikmallya/clubhouse-webhook/echo"
 )
 
 const (
@@ -84,7 +83,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^request has a garbage clubhouse header$`, func() error {
-		req.Header.Set(echoMiddleWare.HeaderClubHouseSignature, "jar-jar-binks")
+		req.Header.Set(echo2.HeaderClubHouseSignature, "jar-jar-binks")
 		return nil
 	})
 
@@ -112,7 +111,7 @@ func FeatureContext(s *godog.Suite) {
 		mac.Write([]byte(validRequestBody))
 		dst := make([]byte, hex.EncodedLen(len(mac.Sum(nil))))
 		hex.Encode(dst, mac.Sum(nil))
-		req.Header.Set(echoMiddleWare.HeaderClubHouseSignature, string(dst))
+		req.Header.Set(echo2.HeaderClubHouseSignature, string(dst))
 		req.Body = ioutil.NopCloser(bytes.NewReader([]byte(validRequestBody)))
 		return nil
 	})
@@ -132,12 +131,12 @@ func FeatureContext(s *godog.Suite) {
 
 func setValidHeader(req *http.Request) {
 	// $ echo "jar-jar-binks" | xxd -p -u
-	req.Header.Set(echoMiddleWare.HeaderClubHouseSignature, "6A61722D6A61722D62696E6B730A")
+	req.Header.Set(echo2.HeaderClubHouseSignature, "6A61722D6A61722D62696E6B730A")
 }
 
 func testserver() *echo.Echo {
 	e := echo.New()
-	e.Use(echoMiddleWare.HeaderVerification(echoMiddleWare.NewConfig(testSecretClubhouse), nil))
+	e.Use(echo2.HeaderVerification(echo2.NewConfig(testSecretClubhouse), nil))
 	e.GET("/", func(c echo.Context) error {
 		return c.NoContent(http.StatusNoContent)
 	})

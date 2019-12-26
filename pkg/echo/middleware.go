@@ -1,16 +1,13 @@
 package echo
 
 import (
-	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/pratikmallya/clubhouse-webhook/pkg/signature"
 )
 
 const (
@@ -49,36 +46,14 @@ func HeaderVerification(config Config, skipper middleware.Skipper) echo.Middlewa
 				return next(c)
 			}
 
-			hexMessageMAC := c.Request().Header.Get(HeaderClubHouseSignature)
-			if hexMessageMAC == "" {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("%s header not specified", HeaderClubHouseSignature))
-			}
-
-			messageMAC := make([]byte, hex.DecodedLen(len(hexMessageMAC)))
-			if _, err := hex.Decode(messageMAC, []byte(hexMessageMAC)); err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error when decoding header %s: %v", HeaderClubHouseSignature, err))
-			}
-
-			message, err := ioutil.ReadAll(c.Request().Body)
+			verified, err := signature.Verify(c.Request(), config.Key)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("error occured when reading request body: %w", err))
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("webhook verification failed. Error: %w", err))
 			}
-			if !validMAC(message, messageMAC, config.Key) {
-				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Errorf("unable to verify request origin from clubhouse"))
+			if !verified {
+				return echo.NewHTTPError(http.StatusUnauthorized, fmt.Errorf("webhook signature did not match"))
 			}
-
-			// Restore request body for processing down the chain
-			// TODO: is this  the recommended way to restore request body
-			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(message))
 			return next(c)
 		}
 	}
-}
-
-// copied verbatim from https://golang.org/pkg/crypto/hmac/
-func validMAC(message, messageMAC, key []byte) bool {
-	mac := hmac.New(sha256.New, key)
-	mac.Write(message)
-	expectedMAC := mac.Sum(nil)
-	return hmac.Equal(messageMAC, expectedMAC)
 }
