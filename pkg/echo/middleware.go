@@ -10,10 +10,6 @@ import (
 	"github.com/pratikmallya/clubhouse-webhook/pkg/signature"
 )
 
-const (
-	HeaderClubHouseSignature = "Clubhouse-Signature"
-)
-
 type Config struct {
 	// Key is the secret used for generating HMAC digest. This is the secret provided to Cluhouse when configuring
 	// webhooks.
