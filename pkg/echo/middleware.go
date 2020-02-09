@@ -10,12 +10,14 @@ import (
 	"github.com/pratikmallya/clubhouse-webhook/pkg/signature"
 )
 
+// Config specifies configuration options for the middleware.
 type Config struct {
 	// Key is the secret used for generating HMAC digest. This is the secret provided to Cluhouse when configuring
 	// webhooks.
 	Key []byte
 }
 
+// NewConfig returns a new Config with the provided configuration options.
 func NewConfig(key string) Config {
 	return Config{
 		Key: []byte(key),
@@ -23,13 +25,7 @@ func NewConfig(key string) Config {
 }
 
 // HeaderVerification is a verification middleware that only allows requests that are verified to originate
-// from Clubhouse when generated with a secret.
-// From https://clubhouse.io/api/webhook/v1/#Signature:
-// If you provide a secret when you create the Outgoing Webhook, it will include an HTTP header named
-// Clubhouse-Signature. The value of this header is a cryptographic hash encoded in hexadecimal.
-//
-// The signature is computed by the HMAC-SHA-256 algorithm. The ‘message’ is the HTTP request body encoded in UTF-8.
-// The ‘secret’ is the secret string you provided, also encoded in UTF-8.
+// from Clubhouse.
 func HeaderVerification(config Config, skipper middleware.Skipper) echo.MiddlewareFunc {
 
 	if skipper == nil {

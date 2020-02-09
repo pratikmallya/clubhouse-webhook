@@ -14,6 +14,14 @@ const (
 	HeaderClubHouseSignature = "Clubhouse-Signature"
 )
 
+// Verify decides if the given request is a valid, signed request originating from Clubhouse.
+//
+// From https://clubhouse.io/api/webhook/v1/#Signature:
+// If you provide a secret when you create the Outgoing Webhook, it will include an HTTP header named
+// Clubhouse-Signature. The value of this header is a cryptographic hash encoded in hexadecimal.
+//
+// The signature is computed by the HMAC-SHA-256 algorithm. The ‘message’ is the HTTP request body encoded in UTF-8.
+// The ‘secret’ is the secret string you provided, also encoded in UTF-8.
 func Verify(req *http.Request, secret []byte) (bool, error) {
 
 	hexMessageMAC := req.Header.Get(HeaderClubHouseSignature)
